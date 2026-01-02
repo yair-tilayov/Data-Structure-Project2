@@ -11,6 +11,7 @@ public class Heap
     public final boolean lazyMelds;
     public final boolean lazyDecreaseKeys;
     public HeapNode min;
+    public int size = 0;
     public int linksCount = 0;
     public int treesCount = 0;
     
@@ -52,20 +53,65 @@ public class Heap
         return root1;
     }
 
-
+    /**
+     * preforms successive linking on the list of trees
+     * @return an array of logn buckets, each one contains a tree of different rank or null
+     */
     public HeapNode[] toBuckets() {
         //works on minimum
+        int numBuckets = Integer.SIZE - Integer.numberOfLeadingZeros(size);
+        HeapNode[] buckets = new HeapNode[numBuckets];
+        
+        HeapNode node1 = min;
+        node1.prev.next = null;
+        while (node1 != null) {
+            HeapNode node2 = node1;
+            node1 = node1.next;
+            while (buckets[node2.rank] != null) {
+                node2 = Heap.link(node2, buckets[node2.rank]);
+                linksCount++;
+                buckets[node2.rank - 1] = null;
+            }
+            buckets[node2.rank] = node2;
+        }
+        return buckets;
 
     }
 
+    /**
+     * 
+     * @param bucketsList an array of buckets ehich contains binomial trees or null
+     * @return a min node of a unifies heap created from the buckets
+     */
     public HeapNode fromBuckets(HeapNode[] bucketsList) {
-        //calculate num trees
+        //calculate num trees and minimum
+        treesCount = 0;
+        HeapNode min = null;
+        for (HeapNode bucketNode : bucketsList) {
+            if (bucketNode != null) {
+                treesCount++;
+                if (min == null) {
+                    min = bucketNode;
+                    min.next = min;
+                    min.prev = min;
+                }
+                else {
+                    bucketNode.prev = min;
+                    bucketNode.next = min.next;
+                    min.next = bucketNode;
+                    bucketNode.next.prev = bucketNode;
+                    if (bucketNode.key < min.key) {
+                        min = bucketNode;
+                    }
+                }
+            }
+        }
+        return min;
     }
 
     public void consolidate() {
         HeapNode[] bucketsList = toBuckets();
         min = fromBuckets(bucketsList);
-        
     }
 
     /**
@@ -132,6 +178,7 @@ public class Heap
     public void meld(Heap heap2)
     {
         //add heap2 history to this (need to add cuts, heapify cost and maybe more)
+        size += heap2.size;
         linksCount += heap2.linksCount;
 
         //connect root lists
@@ -160,7 +207,7 @@ public class Heap
      */
     public int size()
     {
-        return 46; // should be replaced by student code
+        return size;
     }
 
 
