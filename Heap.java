@@ -74,20 +74,22 @@ public class Heap
     }
 
     public void cascadingCut(HeapNode node, HeapNode parentNode) {
-        cut(node, parentNode);
-        cutsCount++;
-        if (lazyDecreaseKeys == true) {
-            Heap newHeap = new Heap(lazyMelds, lazyDecreaseKeys);
-            newHeap.min = node;
-            meld(newHeap);
-        }
-        if (parentNode.parent != null) {
-            if (parentNode.isMarked == false) {
-                parentNode.isMarked = true;
-                markedNodesCount++;
+        if (parentNode != null) {
+            cut(node, parentNode);
+            cutsCount++;
+            if (lazyDecreaseKeys == true) {
+                Heap newHeap = new Heap(lazyMelds, lazyDecreaseKeys);
+                newHeap.min = node;
+                meld(newHeap);
             }
-            else {
-                cascadingCut(parentNode, parentNode.parent);
+            if (parentNode.parent != null) {
+                if (parentNode.isMarked == false) {
+                    parentNode.isMarked = true;
+                    markedNodesCount++;
+                }
+                else {
+                    cascadingCut(parentNode, parentNode.parent);
+                }
             }
         }
     }
@@ -98,7 +100,6 @@ public class Heap
      * @return an array of logn buckets, each one contains a tree of different rank or null
      */
     public HeapNode[] toBuckets() {
-        //works on minimum
         int numBuckets = Integer.SIZE - Integer.numberOfLeadingZeros(size);
         HeapNode[] buckets = new HeapNode[numBuckets];
         
@@ -113,6 +114,7 @@ public class Heap
             }
             buckets[node2.rank] = node2;
         }
+        min.prev.next = min;
         return buckets;
 
     }
@@ -189,6 +191,8 @@ public class Heap
      */
     public HeapNode insert(int key, String info) 
     {    
+        size++;
+
         //insert to an empty heap
         HeapNode node = new HeapNode();
         node.key = key;
@@ -196,6 +200,10 @@ public class Heap
 
         if (min == null) {
             min = node;
+            min.next = min;
+            min.prev = min;
+            min.child = min;
+            min.parent = min;
             treesCount = 1;
             return node;
         }
@@ -223,13 +231,28 @@ public class Heap
      */
     public void deleteMin()
     {
+        size--;
+
         //add minimum childs to the heap
         min.prev.next = min.next;
         min.next.prev = min.prev;
-        HeapNode node = min.prev;
+        HeapNode node = min.next;
         HeapNode child = min.child;
-        min = null;
+        HeapNode currChild = child;
 
+        currChild.prev.next = null; //maybe problem with this line, after it min.prev.next is null and before it's not null
+        //System.out.println(min.prev.next.key);
+        while (currChild != null) {
+            child = currChild;
+            currChild.parent = null;
+            currChild = currChild.next;
+        }
+        child.prev.next = child;
+        
+        min.child = null;
+        min = node;
+        
+        
         node.next.prev = child.prev;
         child.prev.next = node.next;
         node.next = child;
@@ -251,7 +274,7 @@ public class Heap
         if (x.key < min.key) {
             min = x;
         }
-        if (x.key > x.parent.key) {
+        if (x.key >= x.parent.key) {
             return;
         }
 
