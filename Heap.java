@@ -11,6 +11,8 @@ public class Heap
     public final boolean lazyMelds;
     public final boolean lazyDecreaseKeys;
     public HeapNode min;
+    public HeapNode[] rootList;
+    public int linksCount = 0;
     
     /**
      *
@@ -22,6 +24,20 @@ public class Heap
         this.lazyMelds = lazyMelds;
         this.lazyDecreaseKeys = lazyDecreaseKeys;
         // student code can be added here
+    }
+
+    public static void link(HeapNode root1, HeapNode root2) {
+        if (root1.key > root2.key) {
+            HeapNode tmp = root1;
+            root1 = root2;
+            root2 = tmp;
+        }
+        root1.child.prev.next = root2;
+        root2.prev = root1.child.prev;
+        root2.next = root1.child;
+        root1.child.prev = root2;
+        root1.child = root2;
+        root2.parent = root1;
     }
 
     /**
