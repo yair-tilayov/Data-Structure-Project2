@@ -12,6 +12,7 @@ public class Heap
     public final boolean lazyDecreaseKeys;
     public HeapNode min;
     public int linksCount = 0;
+    public int treesCount = 0;
     
     /**
      *
@@ -25,7 +26,15 @@ public class Heap
         // student code can be added here
     }
 
-    public static void link(HeapNode root1, HeapNode root2) {
+    /**
+     * 
+     * @param root1 root of the first tree
+     * @param root2 root of the second tree
+     * 
+     * link both trees of the same degree, returns the root of the new tree
+     */
+    public static HeapNode link(HeapNode root1, HeapNode root2) {
+        //throw Exception if different ranks?
         if (root1.key > root2.key) {
             HeapNode tmp = root1;
             root1 = root2;
@@ -37,6 +46,26 @@ public class Heap
         root1.child.prev = root2;
         root1.child = root2;
         root2.parent = root1;
+
+        root1.rank++;
+
+        return root1;
+    }
+
+
+    public HeapNode[] toBuckets() {
+        //works on minimum
+
+    }
+
+    public HeapNode fromBuckets(HeapNode[] bucketsList) {
+        //calculate num trees
+    }
+
+    public void consolidate() {
+        HeapNode[] bucketsList = toBuckets();
+        min = fromBuckets(bucketsList);
+        
     }
 
     /**
@@ -102,6 +131,24 @@ public class Heap
      */
     public void meld(Heap heap2)
     {
+        //add heap2 history to this (need to add cuts, heapify cost and maybe more)
+        linksCount += heap2.linksCount;
+
+        //connect root lists
+        min.next.prev = heap2.min.prev;
+        heap2.min.prev.next = min.next;
+        min.next = heap2.min;
+        heap2.min.prev = min;
+
+        //find new minimum
+        if (heap2.min.key < min.key) {
+            min = heap2.min;
+        }
+
+        //successive linking
+
+
+
         return; // should be replaced by student code           
     }
     
@@ -124,7 +171,7 @@ public class Heap
      */
     public int numTrees()
     {
-        return 46; // should be replaced by student code
+        return treesCount; // should be replaced by student code
     }
     
     
