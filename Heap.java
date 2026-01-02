@@ -12,8 +12,11 @@ public class Heap
     public final boolean lazyDecreaseKeys;
     public HeapNode min;
     public int size = 0;
-    public int linksCount = 0;
     public int treesCount = 0;
+    public int markedNodesCount = 0;
+    public int linksCount = 0;
+    public int cutsCount = 0;
+    public int heapifyCost = 0;
     
     /**
      *
@@ -34,7 +37,7 @@ public class Heap
      * 
      * link both trees of the same degree, returns the root of the new tree
      */
-    public static HeapNode link(HeapNode root1, HeapNode root2) {
+    public HeapNode link(HeapNode root1, HeapNode root2) {
         //throw Exception if different ranks?
         if (root1.key > root2.key) {
             HeapNode tmp = root1;
@@ -49,9 +52,42 @@ public class Heap
         root2.parent = root1;
 
         root1.rank++;
+        linksCount++;
 
         return root1;
     }
+
+
+    public void cut(HeapNode node, HeapNode parentNode) {
+        node.parent = null;
+        node.isMarked = false;
+        markedNodesCount--;
+        parentNode.rank--;
+        if (node.next == node) {
+            parentNode.child = null;
+        }
+        else {
+            parentNode.child = node.next;
+            node.prev.next = node.next;
+            node.next.prev = node.prev;
+        }
+    }
+
+    public void cascadingCut(HeapNode node, HeapNode parentNode) {
+        cut(node, parentNode);
+        cutsCount++;
+        if (parentNode.parent != null) {
+            if (parentNode.isMarked == false) {
+                parentNode.isMarked = true;
+                markedNodesCount++;
+            }
+            else {
+                cascadingCut(parentNode, parentNode.parent);
+            }
+        }
+
+    }
+
 
     /**
      * preforms successive linking on the list of trees
@@ -68,8 +104,7 @@ public class Heap
             HeapNode node2 = node1;
             node1 = node1.next;
             while (buckets[node2.rank] != null) {
-                node2 = Heap.link(node2, buckets[node2.rank]);
-                linksCount++;
+                node2 = link(node2, buckets[node2.rank]);
                 buckets[node2.rank - 1] = null;
             }
             buckets[node2.rank] = node2;
