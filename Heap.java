@@ -123,7 +123,20 @@ public class Heap
      */
     public HeapNode insert(int key, String info) 
     {    
-        return null; // should be replaced by student code
+        //insert to an empty heap
+        HeapNode node = new HeapNode();
+        node.key = key;
+        node.info = info;
+
+        if (min == null) {
+            min = node;
+            return node;
+        }
+
+        Heap heap2 = new Heap(lazyMelds, lazyDecreaseKeys);
+        HeapNode newNode = heap2.insert(key, info);
+        meld(heap2);
+        return newNode;
     }
 
     /**
@@ -143,7 +156,19 @@ public class Heap
      */
     public void deleteMin()
     {
-        return; // should be replaced by student code
+        //add minimum childs to the heap
+        min.prev.next = min.next;
+        min.next.prev = min.prev;
+        HeapNode node = min.prev;
+        HeapNode child = min.child;
+        min = null;
+
+        node.next.prev = child.prev;
+        child.prev.next = node.next;
+        node.next = child;
+        child.prev = node;
+
+        consolidate();
     }
 
     /**
@@ -181,6 +206,15 @@ public class Heap
         size += heap2.size;
         treesCount += heap2.treesCount;
         linksCount += heap2.linksCount;
+
+        //deal with empty heaps
+        if (min == null) {
+            min = heap2.min;
+            return;
+        }
+        if (heap2.min == null) {
+            return;
+        }
 
         //connect root lists
         min.next.prev = heap2.min.prev;
@@ -282,5 +316,6 @@ public class Heap
         public HeapNode prev;
         public HeapNode parent;
         public int rank;
+        public boolean isMarked;
     }
 }
