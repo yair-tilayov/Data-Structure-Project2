@@ -54,9 +54,13 @@ public class StudentTest {
         Heap heap = new Heap(true, true);
         heap.insert(10, "A");
         heap.insert(5, "B");
-        heap.insert(20, "C");
+        heap.insert(30, "C");
+        heap.insert(40, "C");
+        heap.insert(2, "C");
+        heap.insert(50, "C");
+        heap.insert(60, "C");
         heap.deleteMin();
-        return heap.findMin() != null && heap.findMin().key == 10;
+        return heap.findMin() != null && heap.findMin().key == 5;
     }
 
     private static boolean testDecreaseKey() {

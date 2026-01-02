@@ -44,12 +44,19 @@ public class Heap
             root1 = root2;
             root2 = tmp;
         }
-        root1.child.prev.next = root2;
-        root2.prev = root1.child.prev;
-        root2.next = root1.child;
-        root1.child.prev = root2;
-        root1.child = root2;
-        root2.parent = root1;
+        if (root1.child == null) {
+            root1.child = root2;
+            root2.parent = root1;
+        }
+        else {
+            root1.child.prev.next = root2;
+            root2.prev = root1.child.prev;
+            root2.next = root1.child;
+            root1.child.prev = root2;
+            root1.child = root2;
+            root2.parent = root1;
+        }
+        
 
         root1.rank++;
         linksCount++;
@@ -202,8 +209,6 @@ public class Heap
             min = node;
             min.next = min;
             min.prev = min;
-            min.child = min;
-            min.parent = min;
             treesCount = 1;
             return node;
         }
@@ -233,31 +238,28 @@ public class Heap
     {
         size--;
 
-        //add minimum childs to the heap
         min.prev.next = min.next;
         min.next.prev = min.prev;
         HeapNode node = min.next;
         HeapNode child = min.child;
         HeapNode currChild = child;
 
-        currChild.prev.next = null; //maybe problem with this line, after it min.prev.next is null and before it's not null
-        //System.out.println(min.prev.next.key);
-        while (currChild != null) {
-            child = currChild;
-            currChild.parent = null;
-            currChild = currChild.next;
-        }
-        child.prev.next = child;
+        //add minimum childs to the heap
+        if (child != null){
+            int min_rank = min.rank;
+            while (min_rank > 0) {
+                currChild.parent = null;
+                currChild = currChild.next;
+                min_rank--;
+            }
         
+            node.next.prev = child.prev;
+            child.prev.next = node.next;
+            node.next = child;
+            child.prev = node;
+        }
         min.child = null;
         min = node;
-        
-        
-        node.next.prev = child.prev;
-        child.prev.next = node.next;
-        node.next = child;
-        child.prev = node;
-
         consolidate();
     }
 
@@ -274,15 +276,17 @@ public class Heap
         if (x.key < min.key) {
             min = x;
         }
-        if (x.key >= x.parent.key) {
-            return;
-        }
+        if (x.parent != null) {
+            if (x.key >= x.parent.key) {
+                return;
+            }
 
-        if (lazyDecreaseKeys == true) {
-            cascadingCut(x, x.parent);
-        }
-        else {
-            heapifyUp(x);
+            if (lazyDecreaseKeys == true) {
+                cascadingCut(x, x.parent);
+            }
+            else {
+                heapifyUp(x);
+            }
         }
         return; 
     }
