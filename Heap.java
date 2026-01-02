@@ -11,7 +11,6 @@ public class Heap
     public final boolean lazyMelds;
     public final boolean lazyDecreaseKeys;
     public HeapNode min;
-    public HeapNode[] rootList;
     public int linksCount = 0;
     
     /**
@@ -59,7 +58,7 @@ public class Heap
      */
     public HeapNode findMin()
     {
-        return null; // should be replaced by student code
+        return min;
     }
 
     /**
