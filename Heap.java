@@ -76,6 +76,11 @@ public class Heap
     public void cascadingCut(HeapNode node, HeapNode parentNode) {
         cut(node, parentNode);
         cutsCount++;
+        if (lazyDecreaseKeys == true) {
+            Heap newHeap = new Heap(lazyMelds, lazyDecreaseKeys);
+            newHeap.min = node;
+            meld(newHeap);
+        }
         if (parentNode.parent != null) {
             if (parentNode.isMarked == false) {
                 parentNode.isMarked = true;
@@ -85,7 +90,6 @@ public class Heap
                 cascadingCut(parentNode, parentNode.parent);
             }
         }
-
     }
 
 
@@ -144,10 +148,37 @@ public class Heap
         return min;
     }
 
+    /**
+     * preforms successive linking on a heap and unifies it to a legal binomial heap
+     */
     public void consolidate() {
         HeapNode[] bucketsList = toBuckets();
         min = fromBuckets(bucketsList);
     }
+
+    /**
+     * replaces the node's key and info with its parent recuresively
+     * @param node node to start heapify from
+     */
+    public void heapifyUp(HeapNode node) {
+        if (node.key <= node.parent.key) {
+            return;
+        }
+
+        int node_key = node.key;
+        String node_info = node.info;
+        int parent_key = node.parent.key;
+        String parent_info = node.parent.info;
+
+        node.key = parent_key;
+        node.info = parent_info;
+        node.parent.key = node_key;
+        node.parent.info = node_info;
+
+        heapifyCost++;
+        heapifyUp(node.parent);
+    }
+
 
     /**
      * 
@@ -165,6 +196,7 @@ public class Heap
 
         if (min == null) {
             min = node;
+            treesCount = 1;
             return node;
         }
 
@@ -215,7 +247,21 @@ public class Heap
      */
     public void decreaseKey(HeapNode x, int diff) 
     {    
-        return; // should be replaced by student code
+        x.key -= diff;
+        if (x.key < min.key) {
+            min = x;
+        }
+        if (x.key > x.parent.key) {
+            return;
+        }
+
+        if (lazyDecreaseKeys == true) {
+            cascadingCut(x, x.parent);
+        }
+        else {
+            heapifyUp(x);
+        }
+        return; 
     }
 
     /**
@@ -225,7 +271,8 @@ public class Heap
      */
     public void delete(HeapNode x) 
     {    
-        return; // should be replaced by student code
+        decreaseKey(x, x.key - min.key + 1);
+        deleteMin();
     }
 
 
@@ -240,7 +287,10 @@ public class Heap
         //add heap2 history to this (need to add cuts, heapify cost and maybe more)
         size += heap2.size;
         treesCount += heap2.treesCount;
+        markedNodesCount += heap2.markedNodesCount;
         linksCount += heap2.linksCount;
+        cutsCount += heap2.cutsCount;
+        heapifyCost += heap2.heapifyCost;
 
         //deal with empty heaps
         if (min == null) {
@@ -267,9 +317,7 @@ public class Heap
             consolidate();
         }
 
-
-
-        return; // should be replaced by student code           
+        return;            
     }
     
     
@@ -291,7 +339,7 @@ public class Heap
      */
     public int numTrees()
     {
-        return treesCount; // should be replaced by student code
+        return treesCount;
     }
     
     
@@ -302,7 +350,7 @@ public class Heap
      */
     public int numMarkedNodes()
     {
-        return 46; // should be replaced by student code
+        return markedNodesCount;
     }
     
     
@@ -313,7 +361,7 @@ public class Heap
      */
     public int totalLinks()
     {
-        return 46; // should be replaced by student code
+        return linksCount;
     }
     
     
@@ -324,7 +372,7 @@ public class Heap
      */
     public int totalCuts()
     {
-        return 46; // should be replaced by student code
+        return cutsCount;
     }
     
 
@@ -335,7 +383,7 @@ public class Heap
      */
     public int totalHeapifyCosts()
     {
-        return 46; // should be replaced by student code
+        return heapifyCost;
     }
     
     
