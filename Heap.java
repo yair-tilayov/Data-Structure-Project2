@@ -179,6 +179,7 @@ public class Heap
     {
         //add heap2 history to this (need to add cuts, heapify cost and maybe more)
         size += heap2.size;
+        treesCount += heap2.treesCount;
         linksCount += heap2.linksCount;
 
         //connect root lists
@@ -192,7 +193,10 @@ public class Heap
             min = heap2.min;
         }
 
-        //successive linking
+        //successive linking if required
+        if (lazyMelds == false) {
+            consolidate();
+        }
 
 
 
