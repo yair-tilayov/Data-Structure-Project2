@@ -214,6 +214,7 @@ public void cut(HeapNode node, HeapNode parentNode) {
             minNode.next = minNode;
             minNode.prev = minNode;
             item.node = minNode;
+            item.node.item = item;
             treesCount = 1;
             return item;
         }
