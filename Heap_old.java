@@ -6,11 +6,11 @@
  * the possibility of not performing lazy decrease keys.
  *
  */
-public class Heap
+public class Heap_old
 {
     public final boolean lazyMelds;
     public final boolean lazyDecreaseKeys;
-    public HeapItem min;
+    public HeapNode min;
     public int size = 0;
     public int treesCount = 0;
     public int markedNodesCount = 0;
@@ -23,14 +23,14 @@ public class Heap
      * Constructor to initialize an empty heap.
      *
      */
-    public Heap(boolean lazyMelds, boolean lazyDecreaseKeys)
+    public Heap_old(boolean lazyMelds, boolean lazyDecreaseKeys)
     {
         this.lazyMelds = lazyMelds;
         this.lazyDecreaseKeys = lazyDecreaseKeys;
+        // student code can be added here
     }
 
-
-/**
+    /**
      * 
      * @param root1 root of the first tree
      * @param root2 root of the second tree
@@ -39,7 +39,7 @@ public class Heap
      */
     public HeapNode link(HeapNode root1, HeapNode root2) {
         //throw Exception if different ranks?
-        if (root1.item.key > root2.item.key) {
+        if (root1.key > root2.key) {
             HeapNode tmp = root1;
             root1 = root2;
             root2 = tmp;
@@ -65,7 +65,7 @@ public class Heap
     }
 
 
-public void cut(HeapNode node, HeapNode parentNode) {
+    public void cut(HeapNode node, HeapNode parentNode) {
         node.parent = null;
         node.isMarked = false;
         markedNodesCount--;
@@ -80,14 +80,13 @@ public void cut(HeapNode node, HeapNode parentNode) {
         }
     }
 
-
     public void cascadingCut(HeapNode node, HeapNode parentNode) {
         if (parentNode != null) {
             cut(node, parentNode);
             cutsCount++;
             if (lazyDecreaseKeys == true) {
-                Heap newHeap = new Heap(lazyMelds, lazyDecreaseKeys);
-                newHeap.min = node.item;
+                Heap_old newHeap = new Heap_old(lazyMelds, lazyDecreaseKeys);
+                newHeap.min = node;
                 meld(newHeap);
             }
             if (parentNode.parent != null) {
@@ -111,7 +110,7 @@ public void cut(HeapNode node, HeapNode parentNode) {
         int numBuckets = Integer.SIZE - Integer.numberOfLeadingZeros(size);
         HeapNode[] buckets = new HeapNode[numBuckets];
         
-        HeapNode node1 = min.node;
+        HeapNode node1 = min;
         node1.prev.next = null;
         while (node1 != null) {
             HeapNode node2 = node1;
@@ -122,7 +121,7 @@ public void cut(HeapNode node, HeapNode parentNode) {
             }
             buckets[node2.rank] = node2;
         }
-        min.node.prev.next = min.node;
+        min.prev.next = min;
         return buckets;
 
     }
@@ -149,7 +148,7 @@ public void cut(HeapNode node, HeapNode parentNode) {
                     bucketNode.next = min.next;
                     min.next = bucketNode;
                     bucketNode.next.prev = bucketNode;
-                    if (bucketNode.item.key < min.item.key) {
+                    if (bucketNode.key < min.key) {
                         min = bucketNode;
                     }
                 }
@@ -158,39 +157,37 @@ public void cut(HeapNode node, HeapNode parentNode) {
         return min;
     }
 
-
     /**
      * preforms successive linking on a heap and unifies it to a legal binomial heap
      */
     public void consolidate() {
         HeapNode[] bucketsList = toBuckets();
-        min = fromBuckets(bucketsList).item;
-
+        min = fromBuckets(bucketsList);
     }
-
 
     /**
      * replaces the node's key and info with its parent recuresively
      * @param node node to start heapify from
      */
     public void heapifyUp(HeapNode node) {
-        if (node.item.key <= node.parent.item.key) {
+        if (node.key <= node.parent.key) {
             return;
         }
 
-        int node_key = node.item.key;
-        String node_info = node.item.info;
-        int parent_key = node.parent.item.key;
-        String parent_info = node.parent.item.info;
+        int node_key = node.key;
+        String node_info = node.info;
+        int parent_key = node.parent.key;
+        String parent_info = node.parent.info;
 
-        node.item.key = parent_key;
-        node.item.info = parent_info;
-        node.parent.item.key = node_key;
-        node.parent.item.info = node_info;
+        node.key = parent_key;
+        node.info = parent_info;
+        node.parent.key = node_key;
+        node.parent.info = node_info;
 
         heapifyCost++;
         heapifyUp(node.parent);
     }
+
 
     /**
      * 
@@ -199,29 +196,27 @@ public void cut(HeapNode node, HeapNode parentNode) {
      * Insert (key,info) into the heap and return the newly generated HeapNode.
      *
      */
-    public HeapItem insert(int key, String info) 
+    public HeapNode insert(int key, String info) 
     {    
-       size++;
+        size++;
 
         //insert to an empty heap
-        HeapItem item = new HeapItem();
-        item.key = key;
-        item.info = info;
+        HeapNode node = new HeapNode();
+        node.key = key;
+        node.info = info;
 
         if (min == null) {
-            min = item;
-            HeapNode minNode = new HeapNode();
-            minNode.next = minNode;
-            minNode.prev = minNode;
-            item.node = minNode;
+            min = node;
+            min.next = min;
+            min.prev = min;
             treesCount = 1;
-            return item;
+            return node;
         }
 
-        Heap heap2 = new Heap(lazyMelds, lazyDecreaseKeys);
-        HeapItem newItem = heap2.insert(key, info);
+        Heap_old heap2 = new Heap_old(lazyMelds, lazyDecreaseKeys);
+        HeapNode newNode = heap2.insert(key, info);
         meld(heap2);
-        return newItem;
+        return newNode;
     }
 
     /**
@@ -229,7 +224,7 @@ public void cut(HeapNode node, HeapNode parentNode) {
      * Return the minimal HeapNode, null if empty.
      *
      */
-    public HeapItem findMin()
+    public HeapNode findMin()
     {
         return min;
     }
@@ -243,15 +238,15 @@ public void cut(HeapNode node, HeapNode parentNode) {
     {
         size--;
 
-        min.node.prev.next = min.node.next;
-        min.node.next.prev = min.node.prev;
-        HeapNode node = min.node.next;
-        HeapNode child = min.node.child;
+        min.prev.next = min.next;
+        min.next.prev = min.prev;
+        HeapNode node = min.next;
+        HeapNode child = min.child;
         HeapNode currChild = child;
 
         //add minimum childs to the heap
         if (child != null){
-            int min_rank = min.node.rank;
+            int min_rank = min.rank;
             while (min_rank > 0) {
                 currChild.parent = null;
                 currChild = currChild.next;
@@ -263,9 +258,8 @@ public void cut(HeapNode node, HeapNode parentNode) {
             node.next = child;
             child.prev = node;
         }
-
-        min.node.child = null;
-        min = node.item;
+        min.child = null;
+        min = node;
         consolidate();
     }
 
@@ -276,24 +270,25 @@ public void cut(HeapNode node, HeapNode parentNode) {
      * Decrease the key of x by diff and fix the heap.
      * 
      */
-    public void decreaseKey(HeapItem x, int diff) 
+    public void decreaseKey(HeapNode x, int diff) 
     {    
         x.key -= diff;
         if (x.key < min.key) {
             min = x;
         }
-        if (x.node.parent != null) {
-            if (x.key >= x.node.parent.item.key) {
+        if (x.parent != null) {
+            if (x.key >= x.parent.key) {
                 return;
             }
 
             if (lazyDecreaseKeys == true) {
-                cascadingCut(x.node, x.node.parent);
+                cascadingCut(x, x.parent);
             }
             else {
-                heapifyUp(x.node);
+                heapifyUp(x);
             }
         }
+        return; 
     }
 
     /**
@@ -301,7 +296,7 @@ public void cut(HeapNode node, HeapNode parentNode) {
      * Delete the x from the heap.
      *
      */
-    public void delete(HeapItem x) 
+    public void delete(HeapNode x) 
     {    
         decreaseKey(x, x.key - min.key + 1);
         deleteMin();
@@ -314,7 +309,7 @@ public void cut(HeapNode node, HeapNode parentNode) {
      * pre: heap2.lazyMelds = this.lazyMelds AND heap2.lazyDecreaseKeys = this.lazyDecreaseKeys
      *
      */
-    public void meld(Heap heap2)
+    public void meld(Heap_old heap2)
     {
         //add heap2 history to this (need to add cuts, heapify cost and maybe more)
         size += heap2.size;
@@ -334,10 +329,10 @@ public void cut(HeapNode node, HeapNode parentNode) {
         }
 
         //connect root lists
-        min.node.next.prev = heap2.min.node.prev;
-        heap2.min.node.prev.next = min.node.next;
-        min.node.next = heap2.min.node;
-        heap2.min.node.prev = min.node;
+        min.next.prev = heap2.min.prev;
+        heap2.min.prev.next = min.next;
+        min.next = heap2.min;
+        heap2.min.prev = min;
 
         //find new minimum
         if (heap2.min.key < min.key) {
@@ -349,7 +344,7 @@ public void cut(HeapNode node, HeapNode parentNode) {
             consolidate();
         }
 
-        return;          
+        return;            
     }
     
     
@@ -360,7 +355,7 @@ public void cut(HeapNode node, HeapNode parentNode) {
      */
     public int size()
     {
-        return size; // should be replaced by student code
+        return size;
     }
 
 
@@ -371,7 +366,7 @@ public void cut(HeapNode node, HeapNode parentNode) {
      */
     public int numTrees()
     {
-        return treesCount; // should be replaced by student code
+        return treesCount;
     }
     
     
@@ -382,7 +377,7 @@ public void cut(HeapNode node, HeapNode parentNode) {
      */
     public int numMarkedNodes()
     {
-        return markedNodesCount; // should be replaced by student code
+        return markedNodesCount;
     }
     
     
@@ -393,7 +388,7 @@ public void cut(HeapNode node, HeapNode parentNode) {
      */
     public int totalLinks()
     {
-        return linksCount; // should be replaced by student code
+        return linksCount;
     }
     
     
@@ -404,7 +399,7 @@ public void cut(HeapNode node, HeapNode parentNode) {
      */
     public int totalCuts()
     {
-        return cutsCount; // should be replaced by student code
+        return cutsCount;
     }
     
 
@@ -415,31 +410,22 @@ public void cut(HeapNode node, HeapNode parentNode) {
      */
     public int totalHeapifyCosts()
     {
-        return heapifyCost; // should be replaced by student code
+        return heapifyCost;
     }
     
     
     /**
-     * Class implementing a node in a Heap.
+     * Class implementing a node in a ExtendedFibonacci Heap.
      *  
      */
     public static class HeapNode{
-        public HeapItem item;
+        public int key;
+        public String info;
         public HeapNode child;
         public HeapNode next;
         public HeapNode prev;
         public HeapNode parent;
         public int rank;
         public boolean isMarked;
-    }
-    
-    /**
-     * Class implementing an item in a Heap.
-     *  
-     */
-    public static class HeapItem{
-        public HeapNode node;
-        public int key;
-        public String info;
     }
 }
