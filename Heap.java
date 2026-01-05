@@ -178,15 +178,10 @@ public void cut(HeapNode node, HeapNode parentNode) {
             return;
         }
 
-        int node_key = node.item.key;
-        String node_info = node.item.info;
-        int parent_key = node.parent.item.key;
-        String parent_info = node.parent.item.info;
-
-        node.item.key = parent_key;
-        node.item.info = parent_info;
-        node.parent.item.key = node_key;
-        node.parent.item.info = node_info;
+        HeapItem nodeItem = node.item;
+        HeapItem parentNodeItem = node.parent.item;
+        node.item = parentNodeItem;
+        node.parent.item = nodeItem;
 
         heapifyCost++;
         heapifyUp(node.parent);
