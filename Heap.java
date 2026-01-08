@@ -46,6 +46,8 @@ public class Heap
         }
         if (root1.child == null) {
             root1.child = root2;
+            root2.next = root2;
+            root2.prev = root2;
             root2.parent = root1;
         }
         else {
@@ -123,9 +125,7 @@ public class Heap
             }
             buckets[node2.rank] = node2;
         }
-        min.node.prev.next = min.node;
         return buckets;
-
     }
 
     /**
@@ -266,7 +266,7 @@ public class Heap
         }
 
         min.node.child = null;
-        consolidate(child);
+        consolidate(node);
     }
 
     /**
