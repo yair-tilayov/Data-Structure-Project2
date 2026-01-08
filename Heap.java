@@ -109,11 +109,10 @@ public class Heap
      * preforms successive linking on the list of trees
      * @return an array of logn buckets, each one contains a tree of different rank or null
      */
-    private HeapNode[] toBuckets() {
+    private HeapNode[] toBuckets(HeapNode node1) {
         int numBuckets = Integer.SIZE - Integer.numberOfLeadingZeros(size);
         HeapNode[] buckets = new HeapNode[numBuckets];
         
-        HeapNode node1 = min.node;
         node1.prev.next = null;
         while (node1 != null) {
             HeapNode node2 = node1;
@@ -164,8 +163,8 @@ public class Heap
     /**
      * preforms successive linking on a heap and unifies it to a legal binomial heap
      */
-    private void consolidate() {
-        HeapNode[] bucketsList = toBuckets();
+    private void consolidate(HeapNode node) {
+        HeapNode[] bucketsList = toBuckets(node);
         min = fromBuckets(bucketsList).item;
 
     }
@@ -263,8 +262,7 @@ public class Heap
         }
 
         min.node.child = null;
-        min = node.item;
-        consolidate();
+        consolidate(node);
     }
 
     /**
@@ -344,7 +342,7 @@ public class Heap
 
         //successive linking if required
         if (lazyMelds == false) {
-            consolidate();
+            consolidate(min.node);
         }
 
         return;          

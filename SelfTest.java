@@ -5,6 +5,7 @@ public class SelfTest {
         for (int i = 0; i < 1000; i++) {
             heap.insert(i, "a");
         }
+        heap.deleteMin();
         System.out.println("size: " + heap.size());
         System.out.println("trees number: " + heap.numTrees());
         System.out.println("marked nodes number: " + heap.numMarkedNodes());
@@ -12,6 +13,7 @@ public class SelfTest {
         System.out.println("cuts number: " + heap.totalCuts());
         System.out.println("heapify cost: " + heap.totalHeapifyCosts());
         System.out.println("minimum value: " + heap.findMin().key);
+        System.out.println(heap.findMin().node.rank);
     }
 
 }
