@@ -247,33 +247,10 @@ public class Heap
 
         HeapNode node = min.node.next;
 
-        int tmp = 10;
-        //while (tmp >= 0) {
-            //System.out.print(node.item.key+" ");
-        //    if (node.item.key == 0) {
-        //        System.out.println("what?");
-        //    }
-        //    node = node.next;
-        //    tmp--;
-        //}
-        //System.out.println();
-
         HeapNode child = min.node.child;
         HeapNode currChild = child;
 
-        //BUG IN HRER!!!!! if min has children!
         if (child != null){
-
-            //for some reason, 0 is in the children of min
-            tmp = 10;
-            while (tmp >= 0) {
-                System.out.print(child.item.key+" ");
-                if (child.item.key == 0) {
-                    //System.out.println("what?");
-                }
-                child = child.next;
-                tmp--;
-            }
             System.out.println();
 
             int min_rank = min.node.rank;
@@ -291,16 +268,6 @@ public class Heap
         }
 
         min.node.child = null;
-        //int tmp2 = 15;
-        //while (tmp2 >= 0) {
-            //System.out.print(child.item.key+" ");
-        //    if (child.item.key == 0) {
-                //System.out.println("what?");
-        //    }
-        //    child = child.next;
-        //    tmp2--;
-        //}
-
         consolidate(child);
     }
 

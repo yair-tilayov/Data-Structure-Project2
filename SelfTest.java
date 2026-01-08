@@ -1,11 +1,20 @@
+
 public class SelfTest {
     
     public static void main(String[] args) {
         Heap heap = new Heap(false, true);
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 20; i++) {
             heap.insert(i, "a");
         }
-        heap.deleteMin();
+        Heap.HeapNode min = heap.findMin().node;
+        int tmp = 10;
+        Heap.HeapNode child = min.child;
+        while (tmp > 0) {
+            System.out.print(child.item.key + " ");
+            child = child.next;
+            tmp--;
+        }
+        //heap.deleteMin();
         System.out.println("size: " + heap.size());
         System.out.println("trees number: " + heap.numTrees());
         System.out.println("marked nodes number: " + heap.numMarkedNodes());
