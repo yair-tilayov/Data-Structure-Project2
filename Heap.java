@@ -37,7 +37,7 @@ public class Heap
      * 
      * link both trees of the same degree, returns the root of the new tree
      */
-    public HeapNode link(HeapNode root1, HeapNode root2) {
+    private HeapNode link(HeapNode root1, HeapNode root2) {
         //throw Exception if different ranks?
         if (root1.item.key > root2.item.key) {
             HeapNode tmp = root1;
@@ -60,12 +60,13 @@ public class Heap
 
         root1.rank++;
         linksCount++;
+        treesCount--;
 
         return root1;
     }
 
 
-public void cut(HeapNode node, HeapNode parentNode) {
+    private void cut(HeapNode node, HeapNode parentNode) {
         node.parent = null;
         node.isMarked = false;
         markedNodesCount--;
@@ -78,10 +79,11 @@ public void cut(HeapNode node, HeapNode parentNode) {
             node.prev.next = node.next;
             node.next.prev = node.prev;
         }
+        treesCount++;
     }
 
 
-    public void cascadingCut(HeapNode node, HeapNode parentNode) {
+    private void cascadingCut(HeapNode node, HeapNode parentNode) {
         if (parentNode != null) {
             cut(node, parentNode);
             cutsCount++;
@@ -107,7 +109,7 @@ public void cut(HeapNode node, HeapNode parentNode) {
      * preforms successive linking on the list of trees
      * @return an array of logn buckets, each one contains a tree of different rank or null
      */
-    public HeapNode[] toBuckets() {
+    private HeapNode[] toBuckets() {
         int numBuckets = Integer.SIZE - Integer.numberOfLeadingZeros(size);
         HeapNode[] buckets = new HeapNode[numBuckets];
         
@@ -132,7 +134,7 @@ public void cut(HeapNode node, HeapNode parentNode) {
      * @param bucketsList an array of buckets ehich contains binomial trees or null
      * @return a min node of a unifies heap created from the buckets
      */
-    public HeapNode fromBuckets(HeapNode[] bucketsList) {
+    private HeapNode fromBuckets(HeapNode[] bucketsList) {
         //calculate num trees and minimum
         treesCount = 0;
         HeapNode min = null;
@@ -162,7 +164,7 @@ public void cut(HeapNode node, HeapNode parentNode) {
     /**
      * preforms successive linking on a heap and unifies it to a legal binomial heap
      */
-    public void consolidate() {
+    private void consolidate() {
         HeapNode[] bucketsList = toBuckets();
         min = fromBuckets(bucketsList).item;
 
@@ -173,7 +175,7 @@ public void cut(HeapNode node, HeapNode parentNode) {
      * replaces the node's key and info with its parent recuresively
      * @param node node to start heapify from
      */
-    public void heapifyUp(HeapNode node) {
+    private void heapifyUp(HeapNode node) {
         if (node.item.key <= node.parent.item.key) {
             return;
         }
