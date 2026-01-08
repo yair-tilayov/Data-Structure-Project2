@@ -239,22 +239,51 @@ public class Heap
     public void deleteMin()
     {
         size--;
-
+        
         min.node.prev.next = min.node.next;
         min.node.next.prev = min.node.prev;
+
+        
+
         HeapNode node = min.node.next;
+
+        int tmp = 10;
+        //while (tmp >= 0) {
+            //System.out.print(node.item.key+" ");
+        //    if (node.item.key == 0) {
+        //        System.out.println("what?");
+        //    }
+        //    node = node.next;
+        //    tmp--;
+        //}
+        //System.out.println();
+
         HeapNode child = min.node.child;
         HeapNode currChild = child;
 
-        //BUG IN HRER!!!!!
+        //BUG IN HRER!!!!! if min has children!
         if (child != null){
+
+            //for some reason, 0 is in the children of min
+            tmp = 10;
+            while (tmp >= 0) {
+                System.out.print(child.item.key+" ");
+                if (child.item.key == 0) {
+                    //System.out.println("what?");
+                }
+                child = child.next;
+                tmp--;
+            }
+            System.out.println();
+
             int min_rank = min.node.rank;
             while (min_rank > 0) {
                 currChild.parent = null;
                 currChild = currChild.next;
                 min_rank--;
             }
-        
+            
+            //creates weird list, output is false
             node.next.prev = child.prev;
             child.prev.next = node.next;
             node.next = child;
@@ -262,7 +291,17 @@ public class Heap
         }
 
         min.node.child = null;
-        consolidate(node);
+        //int tmp2 = 15;
+        //while (tmp2 >= 0) {
+            //System.out.print(child.item.key+" ");
+        //    if (child.item.key == 0) {
+                //System.out.println("what?");
+        //    }
+        //    child = child.next;
+        //    tmp2--;
+        //}
+
+        consolidate(child);
     }
 
     /**
