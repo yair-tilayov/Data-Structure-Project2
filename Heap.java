@@ -10,13 +10,13 @@ public class Heap
 {
     public final boolean lazyMelds;
     public final boolean lazyDecreaseKeys;
-    public HeapItem min;
-    public int size = 0;
-    public int treesCount = 0;
-    public int markedNodesCount = 0;
-    public int linksCount = 0;
-    public int cutsCount = 0;
-    public int heapifyCost = 0;
+    private HeapItem min;
+    private int size = 0;
+    private int treesCount = 0;
+    private int markedNodesCount = 0;
+    private int linksCount = 0;
+    private int cutsCount = 0;
+    private int heapifyCost = 0;
     
     /**
      *
