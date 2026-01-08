@@ -246,7 +246,7 @@ public class Heap
         HeapNode child = min.node.child;
         HeapNode currChild = child;
 
-        //add minimum childs to the heap
+        //BUG IN HRER!!!!!
         if (child != null){
             int min_rank = min.node.rank;
             while (min_rank > 0) {
