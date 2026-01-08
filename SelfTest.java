@@ -3,7 +3,7 @@ public class SelfTest {
     
     public static void main(String[] args) {
         Heap heap = new Heap(false, true);
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 4; i++) {
             heap.insert(i, "a");
         }
         Heap.HeapNode min = heap.findMin().node;

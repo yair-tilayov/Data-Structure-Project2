@@ -251,8 +251,6 @@ public class Heap
         HeapNode currChild = child;
 
         if (child != null){
-            System.out.println();
-
             int min_rank = min.node.rank;
             while (min_rank > 0) {
                 currChild.parent = null;
