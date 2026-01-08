@@ -198,7 +198,6 @@ public class Heap
      */
     public HeapItem insert(int key, String info) 
     {    
-       size++;
 
         //insert to an empty heap
         HeapItem item = new HeapItem();
@@ -212,6 +211,7 @@ public class Heap
             minNode.prev = minNode;
             item.node = minNode;
             item.node.item = item;
+            size = 1;
             treesCount = 1;
             return item;
         }
@@ -358,7 +358,7 @@ public class Heap
      */
     public int size()
     {
-        return size; // should be replaced by student code
+        return size;
     }
 
 
@@ -369,7 +369,7 @@ public class Heap
      */
     public int numTrees()
     {
-        return treesCount; // should be replaced by student code
+        return treesCount;
     }
     
     
@@ -380,7 +380,7 @@ public class Heap
      */
     public int numMarkedNodes()
     {
-        return markedNodesCount; // should be replaced by student code
+        return markedNodesCount;
     }
     
     
@@ -391,7 +391,7 @@ public class Heap
      */
     public int totalLinks()
     {
-        return linksCount; // should be replaced by student code
+        return linksCount;
     }
     
     
@@ -402,7 +402,7 @@ public class Heap
      */
     public int totalCuts()
     {
-        return cutsCount; // should be replaced by student code
+        return cutsCount;
     }
     
 
@@ -413,7 +413,7 @@ public class Heap
      */
     public int totalHeapifyCosts()
     {
-        return heapifyCost; // should be replaced by student code
+        return heapifyCost;
     }
     
     
