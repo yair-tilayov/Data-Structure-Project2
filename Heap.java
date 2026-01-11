@@ -38,6 +38,7 @@ public class Heap
      * link both trees of the same degree, returns the root of the new tree
      */
     private HeapNode link(HeapNode root1, HeapNode root2) {
+        // O(1) time
         //throw Exception if different ranks?
         if (root1.item.key > root2.item.key) {
             HeapNode tmp = root1;
@@ -69,9 +70,12 @@ public class Heap
 
 
     private void cut(HeapNode node, HeapNode parentNode) {
+        // O(1) time
         node.parent = null;
-        node.isMarked = false;
-        markedNodesCount--;
+        if (node.isMarked){
+            node.isMarked = false;
+            markedNodesCount--;
+        }
         parentNode.rank--;
         if (node.next == node) {
             parentNode.child = null;
@@ -81,11 +85,14 @@ public class Heap
             node.prev.next = node.next;
             node.next.prev = node.prev;
         }
+        node.next = node;
+        node.prev = node;   
         treesCount++;
     }
 
 
     private void cascadingCut(HeapNode node, HeapNode parentNode) {
+        //O(1) time
         if (parentNode != null) {
             cut(node, parentNode);
             cutsCount++;
@@ -112,6 +119,7 @@ public class Heap
      * @return an array of logn buckets, each one contains a tree of different rank or null
      */
     private HeapNode[] toBuckets(HeapNode node1) {
+        //O(logn) time
         int numBuckets = Integer.SIZE - Integer.numberOfLeadingZeros(size);
         HeapNode[] buckets = new HeapNode[numBuckets];
         
@@ -134,6 +142,7 @@ public class Heap
      * @return a min node of a unifies heap created from the buckets
      */
     private HeapNode fromBuckets(HeapNode[] bucketsList) {
+        //O(logn) time
         //calculate num trees and minimum
         treesCount = 0;
         HeapNode min = null;
@@ -164,6 +173,7 @@ public class Heap
      * preforms successive linking on a heap and unifies it to a legal binomial heap
      */
     private void consolidate(HeapNode node) {
+        //O(logn) time
         HeapNode[] bucketsList = toBuckets(node);
         min = fromBuckets(bucketsList).item;
 
@@ -175,14 +185,17 @@ public class Heap
      * @param node node to start heapify from
      */
     private void heapifyUp(HeapNode node) {
-        if (node.item.key <= node.parent.item.key) {
+        //O(logn) time
+        if(node.parent == null) {
+            return;
+        }   
+        if(node.item.key == node.parent.item.key) {
             return;
         }
 
-        HeapItem nodeItem = node.item;
-        HeapItem parentNodeItem = node.parent.item;
-        node.item = parentNodeItem;
-        node.parent.item = nodeItem;
+        HeapItem tmp= node.item;
+        node.item = node.parent.item;
+        node.parent.item = tmp;
 
         heapifyCost++;
         heapifyUp(node.parent);
@@ -196,7 +209,7 @@ public class Heap
      *
      */
     public HeapItem insert(int key, String info) 
-    {    
+    {    //O(1) time
 
         //insert to an empty heap
         HeapItem item = new HeapItem();
@@ -227,6 +240,7 @@ public class Heap
      *
      */
     public HeapItem findMin()
+    //O(1) time
     {
         return min;
     }
@@ -237,6 +251,7 @@ public class Heap
      *
      */
     public void deleteMin()
+    //O(logn) time
     {
         size--;
         
@@ -277,6 +292,7 @@ public class Heap
      * 
      */
     public void decreaseKey(HeapItem x, int diff) 
+    //O(logn) time
     {    
         x.key -= diff;
         if (x.key < min.key) {
@@ -302,6 +318,7 @@ public class Heap
      *
      */
     public void delete(HeapItem x) 
+    //O(logn) time
     {    
         decreaseKey(x, x.key - min.key + 1);
         deleteMin();
@@ -316,6 +333,7 @@ public class Heap
      */
     public void meld(Heap heap2)
     {
+        //O(1) time
         //add heap2 history to this (need to add cuts, heapify cost and maybe more)
         size += heap2.size;
         treesCount += heap2.treesCount;
@@ -360,6 +378,7 @@ public class Heap
      */
     public int size()
     {
+        //O(1) time
         return size;
     }
 
@@ -371,6 +390,7 @@ public class Heap
      */
     public int numTrees()
     {
+        //O(1) time
         return treesCount;
     }
     
@@ -382,6 +402,7 @@ public class Heap
      */
     public int numMarkedNodes()
     {
+        //O(1) time
         return markedNodesCount;
     }
     
@@ -393,6 +414,7 @@ public class Heap
      */
     public int totalLinks()
     {
+        //O(1) time
         return linksCount;
     }
     
@@ -404,6 +426,7 @@ public class Heap
      */
     public int totalCuts()
     {
+        //O(1) time
         return cutsCount;
     }
     
@@ -415,6 +438,7 @@ public class Heap
      */
     public int totalHeapifyCosts()
     {
+        //O(1) time
         return heapifyCost;
     }
     
