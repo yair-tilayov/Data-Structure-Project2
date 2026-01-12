@@ -2,14 +2,14 @@
 public class SelfTest {
     
     public static void main(String[] args) {
-        Heap heap = new Heap(false, false);
+        Heap heap = new Heap(true, false);
         Heap.HeapItem[] items = new Heap.HeapItem[1000];
         for (int i = 0; i < 1000; i++) {
             items[i] = heap.insert(i, "a");
         }
         heap.deleteMin();
-        //heap.decreaseKey(items[100], 99);
-        heap.delete(items[10]);
+        heap.decreaseKey(items[100], 99);
+        heap.delete(items[100]);
         //System.out.println();
         System.out.println("size: " + heap.size());
         System.out.println("trees number: " + heap.numTrees());

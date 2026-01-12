@@ -270,24 +270,24 @@ public class Heap
         root = min.node.next.item;
 
         if (min.node.next == min.node) {
-        HeapNode child = min.node.child;
-        if (child == null) {
-            min = null;
-            root = null;
-            treesCount = 0;
-            return;
-        } else {
-            HeapNode currChild = child;
-            int min_rank = min.node.rank;
-            while (min_rank > 0) {
-                currChild.parent = null;
-                currChild = currChild.next;
-                min_rank--;
+            HeapNode child = min.node.child;
+            if (child == null) {
+                min = null;
+                root = null;
+                treesCount = 0;
+                return;
+            } else {
+                HeapNode currChild = child;
+                int min_rank = min.node.rank;
+                while (min_rank > 0) {
+                    currChild.parent = null;
+                    currChild = currChild.next;
+                    min_rank--;
+                }
+                consolidate(child);
+                return;
             }
-            consolidate(child);
-            return;
         }
-    }
         
         min.node.prev.next = min.node.next;
         min.node.next.prev = min.node.prev;
@@ -305,10 +305,14 @@ public class Heap
                 min_rank--;
             }
             
-            node.next.prev = child.prev;
-            child.prev.next = node.next;
-            node.next = child;
-            child.prev = node;
+            HeapNode lastChild = child.prev;
+            HeapNode prevNode = node.prev;
+
+            prevNode.next = child;
+            child.prev = prevNode;
+
+            lastChild.next = node;
+            node.prev = lastChild;
         }
 
         //min.node.child = null;
