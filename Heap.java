@@ -11,6 +11,7 @@ public class Heap
     public final boolean lazyMelds;
     public final boolean lazyDecreaseKeys;
     private HeapItem min;
+    private HeapItem root;
     private int size = 0;
     private int treesCount = 0;
     private int markedNodesCount = 0;
@@ -99,6 +100,7 @@ public class Heap
             if (lazyDecreaseKeys == true) {
                 Heap newHeap = new Heap(lazyMelds, lazyDecreaseKeys);
                 newHeap.min = node.item;
+                newHeap.root = node.item;
                 meld(newHeap);
             }
             if (parentNode.parent != null) {
@@ -174,9 +176,15 @@ public class Heap
      */
     private void consolidate(HeapNode node) {
         //O(logn) time
+        if (node == null) {
+            min = null;
+            root = null;
+            treesCount = 0;
+            return;
+        }
         HeapNode[] bucketsList = toBuckets(node);
         min = fromBuckets(bucketsList).item;
-
+        root = min;
     }
 
 
@@ -223,6 +231,7 @@ public class Heap
             minNode.prev = minNode;
             item.node = minNode;
             item.node.item = item;
+            root = min;
             size = 1;
             treesCount = 1;
             return item;
@@ -254,13 +263,33 @@ public class Heap
     //O(logn) time
     {
         size--;
+
+        root = min.node.next.item;
+
+        if (min.node.next == min.node) {
+        HeapNode child = min.node.child;
+        if (child == null) {
+            min = null;
+            root = null;
+            treesCount = 0;
+            return;
+        } else {
+            HeapNode currChild = child;
+            int min_rank = min.node.rank;
+            while (min_rank > 0) {
+                currChild.parent = null;
+                currChild = currChild.next;
+                min_rank--;
+            }
+            consolidate(child);
+            return;
+        }
+    }
         
         min.node.prev.next = min.node.next;
         min.node.next.prev = min.node.prev;
 
-        
-
-        HeapNode node = min.node.next;
+        HeapNode node = root.node;
 
         HeapNode child = min.node.child;
         HeapNode currChild = child;
@@ -273,14 +302,13 @@ public class Heap
                 min_rank--;
             }
             
-            //creates weird list, output is false
             node.next.prev = child.prev;
             child.prev.next = node.next;
             node.next = child;
             child.prev = node;
         }
 
-        min.node.child = null;
+        //min.node.child = null;
         consolidate(node);
     }
 
@@ -345,6 +373,7 @@ public class Heap
         //deal with empty heaps
         if (min == null) {
             min = heap2.min;
+            root = min;
             return;
         }
         if (heap2.min == null) {
@@ -352,20 +381,22 @@ public class Heap
         }
 
         //connect root lists
-        min.node.next.prev = heap2.min.node.prev;
-        heap2.min.node.prev.next = min.node.next;
-        min.node.next = heap2.min.node;
-        heap2.min.node.prev = min.node;
-
-        //find new minimum
-        if (heap2.min.key < min.key) {
-            min = heap2.min;
-        }
+        root.node.next.prev = heap2.root.node.prev;
+        heap2.root.node.prev.next = root.node.next;
+        root.node.next = heap2.root.node;
+        heap2.root.node.prev = root.node;
 
         //successive linking if required
         if (lazyMelds == false) {
-            consolidate(min.node);
+            consolidate(root.node);
         }
+        else {
+            //find new minimum
+            if (heap2.min.key < min.key) {
+                min = heap2.min;
+            }
+        }
+        
 
         return;          
     }

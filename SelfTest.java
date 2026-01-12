@@ -3,11 +3,13 @@ public class SelfTest {
     
     public static void main(String[] args) {
         Heap heap = new Heap(false, true);
+        Heap.HeapItem[] items = new Heap.HeapItem[1000];
         for (int i = 0; i < 1000; i++) {
-            heap.insert(i, "a");
+            items[i] = heap.insert(i, "a");
         }
-        //System.out.println(heap.findMin().node.child.next.item.key);
         heap.deleteMin();
+        heap.decreaseKey(items[100], 99);
+        heap.delete(items[1]);
         //System.out.println();
         System.out.println("size: " + heap.size());
         System.out.println("trees number: " + heap.numTrees());
