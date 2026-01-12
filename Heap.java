@@ -189,7 +189,7 @@ public class Heap
         if(node.parent == null) {
             return;
         }   
-        if(node.item.key == node.parent.item.key) {
+        if(node.item.key >= node.parent.item.key) {
             return;
         }
 
