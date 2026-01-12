@@ -205,6 +205,9 @@ public class Heap
         node.item = node.parent.item;
         node.parent.item = tmp;
 
+        node.item.node = node;
+        node.parent.item.node = node.parent;
+
         heapifyCost++;
         heapifyUp(node.parent);
     }
