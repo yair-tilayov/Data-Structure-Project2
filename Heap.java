@@ -220,9 +220,8 @@ public class Heap
      *
      */
     public HeapItem insert(int key, String info) 
-    {    //O(1) time
+    {    //lazy insert in O(1) time, else O(logn)
 
-        //insert to an empty heap
         HeapItem item = new HeapItem();
         item.key = key;
         item.info = info;
@@ -263,7 +262,7 @@ public class Heap
      *
      */
     public void deleteMin()
-    //O(logn) time
+    //O(logn) time amortized
     {
         size--;
 
@@ -315,7 +314,6 @@ public class Heap
             node.prev = lastChild;
         }
 
-        //min.node.child = null;
         consolidate(node);
     }
 
@@ -327,7 +325,7 @@ public class Heap
      * 
      */
     public void decreaseKey(HeapItem x, int diff) 
-    //O(logn) time
+    //lazy decreaseKey in O(1) time amortized, else O(logn) time
     {    
         x.key -= diff;
         if (x.key < min.key) {
@@ -368,7 +366,7 @@ public class Heap
      */
     public void meld(Heap heap2)
     {
-        //O(1) time
+        //lazy meld in O(1) time, else O(logn)
         //add heap2 history to this (need to add cuts, heapify cost and maybe more)
         size += heap2.size;
         treesCount += heap2.treesCount;
